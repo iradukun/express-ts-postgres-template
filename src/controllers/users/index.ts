@@ -10,26 +10,21 @@ export const createUser = async (
   req: TypedRequestBody<TUserCreate>,
   res: Response,
 ) => {
-  // Create a query runner to control the transactions, it allows to cancel the transaction if we need to
-  const queryRunner = AppDataSource.createQueryRunner();
+  const userRepository = AppDataSource.getRepository(User);
 
-  // Connect the query runner to the database and start the transaction
-  await queryRunner.connect();
-  await queryRunner.startTransaction();
   try {
     const payload = ZUserCreate.safeParse(req.body);
     if (payload.success) {
       const { username, email, password } = payload.data;
 
-      const userRepo = queryRunner.manager.getRepository(User);
-      const usernameExists = await userRepo.exist({
+      const usernameExists = await userRepository.exist({
         where: { username },
       });
       if (usernameExists) {
         throw createHttpError(409, "Username already exists");
       }
 
-      const emailExists = await userRepo.exist({
+      const emailExists = await userRepository.exist({
         where: { email },
       });
       if (emailExists) {
@@ -40,10 +35,8 @@ export const createUser = async (
       newUser.username = username;
       newUser.email = email;
       newUser.setPassword(password);
-      await queryRunner.manager.save(newUser);
+      await userRepository.save(newUser);
 
-      // No exceptions occured, so we commit the transaction
-      await queryRunner.commitTransaction();
       return res.json({
         data: newUser,
         success: true,
@@ -57,7 +50,6 @@ export const createUser = async (
       });
     }
   } catch (err) {
-    await queryRunner.rollbackTransaction();
     return res.status(500).json({
       success: false,
       // @ts-expect-error
@@ -65,8 +57,5 @@ export const createUser = async (
       // @ts-expect-error
       message: err.message,
     });
-  } finally {
-    // We need to release the query runner to not keep a useless connection to the database
-    await queryRunner.release();
   }
 };
