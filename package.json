@@ -18,7 +18,8 @@
     "reflect-metadata": "^0.2.2",
     "tslib": "^2.6.2",
     "typeorm": "^0.3.20",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -34,10 +35,13 @@
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.2.1",
     "nodemon": "^3.1.0",
+    "prettier": "^3.3.3",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
@@ -47,8 +51,10 @@
     "dev": "nodemon -L src/index.ts --watch \"src/**/*.{ts,js}\"",
     "build": "tsc -p tsconfig-build.json",
     "type-check": "tsc --noEmit",
-    "lint:fix": "eslint --fix \"{src}/**/*.{ts,js}\"",
-    "lint": "eslint \"{src}/**/*.{ts,js}\"",
+    "lint:fix": "eslint --fix \"src/**/*.{ts,js}\"",
+    "lint": "eslint \"src/**/*.{ts,js}\"",
+    "prettier": "prettier --check \"src/**/*.{ts,js}\"",
+    "prettier:fix": "prettier --write \"src/**/*.{ts,js}\"",
     "docker:up": "docker-compose up -d && pnpm docker:shell",
     "docker:down": "docker-compose down",
     "docker:shell": "docker exec -it api sh",
